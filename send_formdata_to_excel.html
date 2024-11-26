@@ -108,8 +108,9 @@
               <option value="" disabled selected hidden>Seleccione...</option>
               <option value="pan">Pan</option>
               <option value="bizcochos">Bizcochos</option>
-			   <option value="empanadas">Empanadas</option>
-			      <option value="budin">Budin</option>
+	     <option value="empanadas">Empanadas</option>
+             <option value="budin">Budin</option>
+	     <option value="budin">Otro</option>
             </select>
           </div>
           <div class="form-group">
@@ -120,11 +121,11 @@
 			  <option value="Mica">Mica</option>
 			  <option value="Coliza">Coliza</option>
               <option value="Bola">Bola</option>
-              <option value="Otro">Otro</option>
+              <option value="Otro">Gasto moto y siza</option>
             </select>
           </div>
 		   <div class="form-group">
-            <label for="vendedor">Vendedora:</label>
+            <label for="vendedor">Vendedor:</label>
             <select class="form-control" name="vendedor" id="vendedor" required>
               <option value="" disabled selected hidden>Seleccione...</option>
 			  <option value="VendedoraParada">Vendedora Parada</option>
@@ -139,12 +140,12 @@
               type="text"
               name="sobro"
               id="sobro"
-              placeholder="Sobro de Pan"
+              placeholder="Cuanto sobro"
               required
             />
           </div>
 
-          <div class="form-group">
+          <div class="form-group" style="display: none;">
             <label for="total_producto">Total:</label>
             <input
               class="form-control"
@@ -155,7 +156,7 @@
               readonly
             />
           </div>
-          <div class="form-group">
+          <div class="form-group" style="display: none;">
             <label for="total">Total Final:</label>
             <input
               class="form-control"
