@@ -107,13 +107,11 @@
             <select class="form-control" name="tipo" id="tipo" required>
               <option value="" disabled selected hidden>Seleccione...</option>
               <option value="pan">Pan</option>
-              <option value="bizcochos">Bizcochos</option>
 	     <option value="empanadas">Empanadas</option>
              <option value="budin">Budin</option>
-	     <option value="budin">Otro</option>
             </select>
           </div>
-          <div class="form-group">
+          <div class="form-group" id="tipo_producto_group">
             <label for="tipo_producto">Tipo de Producto:</label>
             <select class="form-control" name="tipo_producto" id="tipo_producto" required>
               <option value="" disabled selected hidden>Seleccione...</option>
@@ -121,8 +119,7 @@
 			  <option value="Mica">Mica</option>
 			  <option value="Coliza">Coliza</option>
               <option value="Bola">Bola</option>
-		    <option value="Otro">Postres</option>
-              <option value="Otro">Gasto moto y siza</option>
+		    <option value="Postres">Postres</option>
             </select>
           </div>
 		   <div class="form-group">
@@ -146,14 +143,14 @@
             />
           </div>
 
-          <div class="form-group" style="display: none;">
-            <label for="total_producto">Total:</label>
+          <div class="form-group" style="display: none;" id="total_producto_group">
+            <label for="total_producto">Cantidad:</label>
             <input
               class="form-control"
               type="number"
               name="total_producto"
               id="total_producto"
-              placeholder="Total calculado"
+              placeholder="Cantidad"
               readonly
             />
           </div>
@@ -180,10 +177,10 @@
               <tr>
                 <th>Latas</th>
                 <th>Tipo</th>
-                <th>Tipo de Producto</th>
-                <th>Sobro de Pan</th>
-                <th>Total Producto</th>
-                <th>Total Final</th>
+                <th>Variedad</th>
+                <th>Sobro</th>
+                <th>Cantidad</th>
+                <th>Subtotal</th>
               </tr>
             </thead>
             <tbody id="recordsContainer"></tbody>
@@ -230,7 +227,27 @@
         "https://script.google.com/macros/s/AKfycbx5IBlPjmhj-YXx_qlzG0FhgS42qCyDq6WEfvJ3QfBHh87cQvqMet6w1Iq9WRxItAWInw/exec";
       const form = document.forms["submit-to-google-sheet"];
       let records = [];
+document.getElementById("tipo").addEventListener("change", function() {
+  const tipo = document.getElementById("tipo").value;
+  const tipoProducto = document.getElementById("tipo_producto");
+  const tipoProductoGroup = document.getElementById("tipo_producto_group"); // El contenedor del campo Tipo de Producto
+  const total_producto_group = document.getElementById("total_producto_group"); // El contenedor del campo Tipo de Producto
+const totalProducto = document.getElementById("total_producto");
 
+  // Si el tipo es "empanadas" o "budin"
+  
+  if (tipo === "empanadas" || tipo === "budin") {
+    tipoProducto.value = "Postres";  // Establecer el valor de "Postres" en el campo Tipo de Producto
+    tipoProductoGroup.style.display = "none";  // Ocultar el campo Tipo de Producto
+	total_producto_group.style.display = "block"; 
+	 totalProducto.readOnly = false; 
+  } else {
+  total_producto_group.style.display = "none"; 
+    tipoProductoGroup.style.display = "block";  // Mostrar el campo Tipo de Producto
+    tipoProducto.value = "";  // Restablecer el valor a vacío si no es "empanadas" ni "budin"
+	 totalProducto.readOnly = true; 
+  }
+});
       // Evento para enviar los datos al Google Sheet
       form.addEventListener("submit", (e) => {
         e.preventDefault();
@@ -240,13 +257,14 @@
         const tipo = document.getElementById("tipo").value;
         const tipo_producto = document.getElementById("tipo_producto").value;
         const sobro = parseFloat(document.getElementById("sobro").value);
-
+		const vendedor = document.getElementById("vendedor").value;
+const total_producto1 = document.getElementById("total_producto").value;
         // Validación de los datos
         if (isNaN(latas) || latas <= 0 || tipo_producto === "") {
           swal("Error", "Por favor ingresa valores válidos.", "error");
           return;
         }
-
+	
         // Calcular el total
         let total_producto;
 		 let total;
@@ -262,11 +280,33 @@
           total_producto = 20 * latas;
 		    total = (total_producto - sobro) /2;
         }
+		if (tipo === "empanadas") {
+          total_producto = 20 * latas;
+		    total = (total_producto - sobro) /2;
+        }
 		if (tipo === "budin") {
-          total_producto = 15 * latas;
+          total_producto = total_producto1 * latas;
 		    total = (total_producto - sobro) ;
         }
+		
+		console.log("vendedor:"+vendedor);
+		console.log("tipo:"+tipo);
+		if(vendedor === "VendedoraPanaderia" && tipo === "pan" ) {
+		console.log("entro");
+		  total = (total_producto - sobro) / 5;
+		}
+	
+document.getElementById("tipo").addEventListener("change", function() {
+  const tipo = document.getElementById("tipo").value;
+  const tipoProducto = document.getElementById("tipo_producto");
 
+  // Si el tipo es "empanadas" o "budin", establecer el valor de "Tipo de Producto" a "Postres"
+  if (tipo === "empanadas" || tipo === "budin") {
+    tipoProducto.value = "Postres";  // Establecer el valor predeterminado
+  } else {
+    tipoProducto.value = "";  // Restablecer la selección si no es "empanadas" o "budin"
+  }
+});
 
      
         document.getElementById("total_producto").value = total_producto;
