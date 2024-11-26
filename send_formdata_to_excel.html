@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registro de Latas - Panadería</title>
+    <link
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.all.min.js"></script>
+    <style>
+      body {
+        background-color: #f8f4f1; /* Fondo suave */
+        font-family: 'Arial', sans-serif;
+      }
+
+      .form-container {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 30px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+      }
+
+      h4 {
+        color: #9b6a4f; /* Color marrón suave, estilo panadería */
+        font-size: 24px;
+        font-weight: bold;
+      }
+
+      .btn-custom {
+        background-color: #9b6a4f;
+        color: #fff;
+        border: none;
+      }
+
+      .btn-custom:hover {
+        background-color: #7e5037;
+      }
+
+      .table-custom th, .table-custom td {
+        text-align: center;
+        padding: 10px;
+      }
+
+      .table-custom {
+        margin-top: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .table-custom th {
+        background-color: #9b6a4f;
+        color: #fff;
+      }
+
+      .record-list {
+        margin-top: 20px;
+      }
+
+      .record-item {
+        margin-bottom: 10px;
+        padding: 10px;
+        background-color: #f1e0c6;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .record-item strong {
+        color: #9b6a4f;
+      }
+
+      /* Estilos adicionales para la fila de totales */
+      .total-row td {
+        font-weight: bold;
+        background-color: #f8d9a8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="form-container">
+        <h4 class="text-center mb-4">Registro de Latas a Google Sheets</h4>
+        
+        <!-- Formulario para ingresar datos -->
+        <form id="submit-to-google-sheet">
+          <div class="form-group">
+            <label for="latas">Latas:</label>
+            <input
+              class="form-control"
+              type="text"
+              name="latas"
+              id="latas"
+              placeholder="Cantidad de latas"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="tipo">Tipo:</label>
+            <select class="form-control" name="tipo" id="tipo" required>
+              <option value="" disabled selected hidden>Seleccione...</option>
+              <option value="pan">Pan</option>
+              <option value="bizcochos">Bizcochos</option>
+			   <option value="empanadas">Empanadas</option>
+			      <option value="budin">Budin</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="tipo_producto">Tipo de Producto:</label>
+            <select class="form-control" name="tipo_producto" id="tipo_producto" required>
+              <option value="" disabled selected hidden>Seleccione...</option>
+              <option value="Italiano">Italiano</option>
+			  <option value="Mica">Mica</option>
+			  <option value="Coliza">Coliza</option>
+              <option value="Bola">Bola</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="sobro">Cuanto sobro:</label>
+            <input
+              class="form-control"
+              type="text"
+              name="sobro"
+              id="sobro"
+              placeholder="Sobro de Pan"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="total_producto">Total:</label>
+            <input
+              class="form-control"
+              type="number"
+              name="total_producto"
+              id="total_producto"
+              placeholder="Total calculado"
+              readonly
+            />
+          </div>
+          <div class="form-group">
+            <label for="total">Total Final:</label>
+            <input
+              class="form-control"
+              type="number"
+              name="total"
+              id="total"
+              placeholder="Total calculado"
+              readonly
+            />
+          </div>
+
+          <button type="submit" class="btn btn-custom btn-block">Registrar</button>
+        </form>
+
+        <!-- Tabla para mostrar los registros -->
+        <div id="recordList" class="record-list">
+          <h5>Registros Ingresados:</h5>
+          <table id="recordsTable" class="table table-custom">
+            <thead>
+              <tr>
+                <th>Latas</th>
+                <th>Tipo</th>
+                <th>Tipo de Producto</th>
+                <th>Sobro de Pan</th>
+                <th>Total Producto</th>
+                <th>Total Final</th>
+              </tr>
+            </thead>
+            <tbody id="recordsContainer"></tbody>
+            <!-- Fila de totales -->
+            <tfoot>
+              <tr class="total-row">
+                <td colspan="5">Total Final:</td>
+                <td id="totalFinal">0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const scriptURL =
+        "https://script.google.com/macros/s/AKfycbx5IBlPjmhj-YXx_qlzG0FhgS42qCyDq6WEfvJ3QfBHh87cQvqMet6w1Iq9WRxItAWInw/exec";
+      const form = document.forms["submit-to-google-sheet"];
+      let records = [];
+
+      // Evento para enviar los datos al Google Sheet
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        // Obtener los valores de los campos
+        const latas = parseFloat(document.getElementById("latas").value);
+        const tipo = document.getElementById("tipo").value;
+        const tipo_producto = document.getElementById("tipo_producto").value;
+        const sobro = parseFloat(document.getElementById("sobro").value);
+
+        // Validación de los datos
+        if (isNaN(latas) || latas <= 0 || tipo_producto === "") {
+          swal("Error", "Por favor ingresa valores válidos.", "error");
+          return;
+        }
+
+        // Calcular el total
+        let total_producto;
+		 let total;
+        if (tipo_producto === "Italiano" || tipo_producto === "Bola") {
+          total_producto = 30 * latas;
+		    total = (total_producto - sobro) / 4;
+        }
+		if (tipo_producto === "Mica" || tipo_producto === "Coliza"|| tipo_producto === "Hamburguesas") {
+          total_producto = 20 * latas;
+		  total = (total_producto - sobro) / 4;
+        }
+		if (tipo === "empanadas") {
+          total_producto = 20 * latas;
+		    total = (total_producto - sobro) /2;
+        }
+		if (tipo === "budin") {
+          total_producto = 15 * latas;
+		    total = (total_producto - sobro) ;
+        }
+
+
+     
+        document.getElementById("total_producto").value = total_producto;
+        document.getElementById("total").value = total;
+
+        // Crear el objeto de registro
+        const record = {
+          latas,
+          tipo,
+          tipo_producto,
+          sobro,
+          total_producto,
+          total,
+        };
+
+        // Guardar el registro en la lista interna
+        records.push(record);
+
+        // Mostrar los registros ingresados
+        displayRecords();
+
+        // Enviar el registro al Google Sheets
+        const formData = new FormData(form);
+        fetch(scriptURL, { method: "POST", body: formData })
+          .then((response) => {
+            swal("Hecho", "Registro guardado correctamente.", "success");
+          })
+          .catch((error) => {
+            swal("Error", "Hubo un problema al guardar el registro.", "error");
+          });
+      });
+
+      // Mostrar los registros en la tabla
+      function displayRecords() {
+        const recordsContainer = document.getElementById("recordsContainer");
+        recordsContainer.innerHTML = "";
+
+        let totalFinal = 0;
+        records.forEach((record) => {
+          const row = `
+            <tr>
+              <td>${record.latas}</td>
+              <td>${record.tipo}</td>
+              <td>${record.tipo_producto}</td>
+              <td>${record.sobro}</td>
+              <td>${record.total_producto}</td>
+              <td>${record.total}</td>
+            </tr>
+          `;
+          recordsContainer.innerHTML += row;
+          totalFinal += record.total; // Sumar el total final
+        });
+
+        // Mostrar el total final
+        document.getElementById("totalFinal").textContent = totalFinal.toFixed(2);
+      }
+
+      // Función para agregar un nuevo registro sin borrar los anteriores
+      document.getElementById("nuevoRegistro").addEventListener("click", () => {
+        form.reset(); // Limpiar el formulario para un nuevo registro
+      });
+    </script>
+  </body>
+</html>
