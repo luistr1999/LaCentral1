@@ -87,7 +87,7 @@
   <body>
     <div class="container">
       <div class="form-container">
-        <h4 class="text-center mb-4">Registro de Latas a Google Sheets</h4>
+        <h4 class="text-center mb-4">Cuenta de latas</h4>
         
         <!-- Formulario para ingresar datos -->
         <form id="submit-to-google-sheet">
@@ -158,7 +158,7 @@
             />
           </div>
           <div class="form-group" style="display: none;">
-            <label for="total">Total Final:</label>
+            <label for="total">Total:</label>
             <input
               class="form-control"
               type="number"
@@ -169,12 +169,12 @@
             />
           </div>
 
-          <button type="submit" class="btn btn-custom btn-block">Registrar</button>
+          <button type="submit" class="btn btn-custom btn-block">Añadir</button>
         </form>
 
         <!-- Tabla para mostrar los registros -->
         <div id="recordList" class="record-list">
-          <h5>Registros Ingresados:</h5>
+		    <div class="table-responsive">
           <table id="recordsTable" class="table table-custom">
             <thead>
               <tr>
@@ -195,10 +195,36 @@
               </tr>
             </tfoot>
           </table>
+		  </div>
         </div>
       </div>
     </div>
+<style>
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 768px) {
+  .table-custom th, .table-custom td {
+    padding: 8px; /* Reducir el padding para que ocupe menos espacio */
+    font-size: 12px; /* Reducir el tamaño de la fuente */
+  }
 
+  /* Reducir el tamaño de las cabeceras */
+  .table-custom th {
+    font-size: 14px; /* Tamaño de fuente más pequeño */
+  }
+
+  /* Ajustar los márgenes de la tabla */
+  .table-custom {
+    font-size: 12px; /* Ajustar el tamaño de la fuente de la tabla */
+  }
+
+  /* Opcional: también puedes hacer la tabla más estrecha */
+  .table-custom td, .table-custom th {
+    max-width: 100px; /* Limitar el ancho de las columnas */
+    word-wrap: break-word; /* Permite que el texto se divida */
+  }
+}
+
+</style>
     <script>
       const scriptURL =
         "https://script.google.com/macros/s/AKfycbx5IBlPjmhj-YXx_qlzG0FhgS42qCyDq6WEfvJ3QfBHh87cQvqMet6w1Iq9WRxItAWInw/exec";
